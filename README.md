@@ -1,0 +1,2 @@
+# scrapod
+Distributed scrapper bot
