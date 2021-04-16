@@ -30,3 +30,15 @@
 *.exe
 *.out
 *.app
+
+# config
+config.ini
+
+# compile commands
+**/compile_commands.json
+
+# ctags
+**/tags
+
+# cache
+.cache
