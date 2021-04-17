@@ -1,5 +1,6 @@
-#if !defined(LOGGING_C_H)
-#define LOGGIGNG_C_H
+#if !defined(LOGGING_H)
+#define LOGGIGNG_H
+#include <stdarg.h>
 #include <syslog.h>
 
 enum LOG_LEVEL {
