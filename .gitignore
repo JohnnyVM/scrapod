@@ -42,3 +42,6 @@ config.ini
 
 # cache
 .cache
+
+# output
+scrapod

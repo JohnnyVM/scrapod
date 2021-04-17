@@ -5,9 +5,9 @@
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
+#include <argp.h>
 
 extern "C" {
-#include <argp.h>
 #include "logging.h"
 #include "ini.h"
 }
@@ -25,6 +25,7 @@ static char args_doc[] = "[-V] [-v] [-c /path/config/file]";
 
 static struct argp_option options[] = {
   { "verbose",           'v', 0,          0, "Produce verbose output", 0 },
+  { "log_level",         'l', "loglevel", 0, "Produce verbose output", 0 },
   { "config_file_path",  'c', "config",   0, "Config file path",       0 },
   { "POSTGRES_PASSWORD", 'p', "password", 0, "Postgres password",      0 },
   { "POSTGRES_USER",     'u', "user",     0, "Postgres user",          0 },
@@ -32,10 +33,12 @@ static struct argp_option options[] = {
   { 0,                   0,   0,          0, 0,                        0 }
 };
 
+
 // global value for store the config
 struct configuration {
 	bool verbose;
 	char *config_file_path;
+	int log_level;
 	char* POSTGRES_PASSWORD;
 	char* POSTGRES_USER;
 	char* POSTGRES_DB;
@@ -46,6 +49,7 @@ void print_configuration(struct configuration *conf)
 	printf("\nConfiguration:");
 	printf("\nverbose: %u", conf->verbose);
 	printf("\nconfig_file_path: %s", conf->config_file_path);
+	printf("\nlog_level: %i", conf->log_level);
 	printf("\nPOSTGRES_PASSWORD: %s", conf->POSTGRES_PASSWORD);
 	printf("\nPOSTGRES_USER: %s", conf->POSTGRES_USER);
 	printf("\nPOSTGRES_DB: %s", conf->POSTGRES_DB);
@@ -58,11 +62,12 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	struct configuration *arguments = (struct configuration *)state->input;
 
 	switch (key) {
-		case 'v': arguments->verbose = true; break;
-		case 'c': arguments->config_file_path  = arg; break;
-		case 'p': arguments->POSTGRES_PASSWORD = arg; break;
-		case 'u': arguments->POSTGRES_USER     = arg; break;
-		case 'b': arguments->POSTGRES_DB       = arg; break;
+		case 'v': arguments->verbose = true;                break;
+		case 'c': arguments->config_file_path  = arg;       break;
+		case 'p': arguments->POSTGRES_PASSWORD = arg;       break;
+		case 'u': arguments->POSTGRES_USER     = arg;       break;
+		case 'b': arguments->POSTGRES_DB       = arg;       break;
+		case 'l': arguments->log_level         = atoi(arg); break;
 
 		case ARGP_KEY_ARG: break;
 
@@ -157,12 +162,12 @@ int main(int argc, char *argv[]) {
 	struct logging logging = INIT_LOGGING;
 
 	logging.getLogger(NULL);
-	atexit(logging.closeLogger);
 
 	// Set default values
 	Config = (struct configuration){
 		.verbose=false,
 		.config_file_path=NULL,
+		.log_level=WARNING,
 		.POSTGRES_PASSWORD=NULL,
 		.POSTGRES_USER=NULL,
 		.POSTGRES_DB=NULL,
@@ -173,6 +178,7 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
+	logging.setLogLevel(Config.log_level);
 	logging.notice("Start");
 
 	if(Config.config_file_path && Config.config_file_path[0] != '\0') {
@@ -189,7 +195,6 @@ int main(int argc, char *argv[]) {
 	check_config(&Config);
 
 	logging.notice("End");
-	logging.closeLogger();
 
 	return 0;
 }
