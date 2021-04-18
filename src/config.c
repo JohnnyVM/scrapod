@@ -26,11 +26,13 @@ static char args_doc[] = "[-V] [-v] [-c /path/config/file]";
 static struct argp_option options[] = {
   { "verbose",           'v', 0,          0, "Produce verbose output", 0 },
   { "log_level",         'l', "loglevel", 0, "Produce verbose output", 0 },
-  { "config_file_path",  'c', "config",   0, "Config file path",       0 },
-  { "POSTGRES_PASSWORD", 'p', "password", 0, "Postgres password",      0 },
-  { "POSTGRES_USER",     'u', "user",     0, "Postgres user",          0 },
-  { "POSTGRES_DB",       'd', "database", 0, "Postgres database",      0 },
-  { 0,                   0,   0,          0, 0,                        0 }
+  { "config_file_path",  'c', "config",   0, "Config file path", 0 },
+  { "db_password", 'w', "password", 0, "Postgres password", 0 },
+  { "db_user",     'U', "user",     0, "Postgres user", 0 },
+  { "db_name",       'd', "database", 0, "Postgres name", 0 },
+  { "db_host",       'h', "host", 0, "Postgres host", 0 },
+  { "db_port",       'p', "port", 0, "Postgres port", 0 },
+  { 0,                   0,   0,          0, 0, 0 }
 };
 
 
@@ -42,9 +44,10 @@ void print_configuration(struct configuration *conf)
 	printf("\nverbose: %u", conf->verbose);
 	printf("\nconfig_file_path: %s", conf->config_file_path);
 	printf("\nlog_level: %i", conf->log_level);
-	printf("\nPOSTGRES_PASSWORD: %s", conf->POSTGRES_PASSWORD);
-	printf("\nPOSTGRES_USER: %s", conf->POSTGRES_USER);
-	printf("\nPOSTGRES_DB: %s", conf->POSTGRES_DB);
+	printf("\ndatabase user: %s", conf->db_user);
+	printf("\ndatabase name: %s", conf->db_name);
+	printf("\ndatabase port: %s", conf->db_port);
+	printf("\ndatabase hostname: %s", conf->db_host);
 	printf("\n");
 }
 
@@ -56,9 +59,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	switch (key) {
 		case 'v': arguments->verbose = true;                break;
 		case 'c': arguments->config_file_path  = arg;       break;
-		case 'p': arguments->POSTGRES_PASSWORD = arg;       break;
-		case 'u': arguments->POSTGRES_USER     = arg;       break;
-		case 'b': arguments->POSTGRES_DB       = arg;       break;
+		case 'p': arguments->db_password       = arg;       break;
+		case 'u': arguments->db_user           = arg;       break;
+		case 'b': arguments->db_name           = arg;       break;
 		case 'l': arguments->log_level         = atoi(arg); break;
 
 		case ARGP_KEY_ARG: break;
@@ -83,11 +86,11 @@ static int _config_ini_handler(void *arg_config, const char* section, const char
 	struct configuration* config = (struct configuration*)arg_config;
 
 	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
-	if (MATCH("database", "POSTGRES_PASSWORD") && !config->POSTGRES_PASSWORD) {
-		config->POSTGRES_PASSWORD = strdup(value);
-	} else if (MATCH("database", "POSTGRES_USER") && !config->POSTGRES_USER) {
+	if (MATCH("database", "POSTGRES_PASSWORD") && !config->db_password) {
+		config->db_password = strdup(value);
+	} else if (MATCH("database", "POSTGRES_USER") && !config->db_user) {
 		config->POSTGRES_USER = strdup(value);
-	} else if (MATCH("database", "POSTGRES_DB") && !config->POSTGRES_DB) {
+	} else if (MATCH("database", "POSTGRES_DB") && !config->db_name) {
 		config->POSTGRES_DB = strdup(value);
 	} else {
 		logging.debug("Ignoring config option [%s] %s.", section, name);

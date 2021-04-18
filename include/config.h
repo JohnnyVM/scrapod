@@ -9,9 +9,11 @@ struct configuration {
 	bool verbose;
 	char *config_file_path;
 	int log_level;
-	char* POSTGRES_PASSWORD;
-	char* POSTGRES_USER;
-	char* POSTGRES_DB;
+	char* db_password;
+	char* db_user;
+	char* db_name;
+	char* db_port;
+	char* db_host;
 };
 
 int init_config(int, char *argv[]);
