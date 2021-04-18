@@ -32,7 +32,9 @@
 *.app
 
 # config
-config.ini
+**/config.ini
+**/env
+**/.env
 
 # compile commands
 **/compile_commands.json
