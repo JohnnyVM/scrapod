@@ -75,12 +75,13 @@ void vlog_record(int log_priority, const char* fmt, va_list args)
 }
 
 /**
- * \brief log a message
+ * \brief log a message with priority "log_priority"
  *
  * in linux automatically enable a coredump trace in journalctl under the name system-coredump
  * then its not very necesary track the status
  * \param log_priority priority of the message, in linux NOT STORE THE PRIORITY IN THE OUTPUT
  * lean to use journalctl
+ * \param fmt format string
  */
 void log_record(int log_priority, const char *fmt, ...)
 {
@@ -100,6 +101,10 @@ void close_logger([[maybe_unused]] const char* name)
 	closelog();
 }
 
+/**
+ * \brief log message with priority debug
+ * \param fmt format string
+ */
 void log_debug(const char* fmt, ...)
 {
 	if(INFO >= loglevel_setted) {
@@ -110,6 +115,10 @@ void log_debug(const char* fmt, ...)
 	}
 }
 
+/**
+ * \brief log message with priority info
+ * \param fmt format string
+ */
 void log_info(const char* fmt, ...)
 {
 	if(INFO >= loglevel_setted) {
@@ -120,6 +129,10 @@ void log_info(const char* fmt, ...)
 	}
 }
 
+/**
+ * \brief log message with priority notice
+ * \param fmt format string
+ */
 void log_notice(const char* fmt, ...)
 {
 	if(NOTICE >= loglevel_setted) {
@@ -130,6 +143,10 @@ void log_notice(const char* fmt, ...)
 	}
 }
 
+/**
+ * \brief log message with priority warning
+ * \param fmt format string
+ */
 void log_warning(const char* fmt, ...)
 {
 	if(WARNING >= loglevel_setted) {
@@ -140,6 +157,10 @@ void log_warning(const char* fmt, ...)
 	}
 }
 
+/**
+ * \brief log message with priority error
+ * \param fmt format string
+ */
 void log_error(const char* fmt, ...)
 {
 	if(ERROR >= loglevel_setted) {
@@ -150,6 +171,10 @@ void log_error(const char* fmt, ...)
 	}
 }
 
+/**
+ * \brief log message with priority critical
+ * \param fmt format string
+ */
 void log_critical(const char* fmt, ...)
 {
 	if(CRITICAL >= loglevel_setted) {
@@ -160,6 +185,10 @@ void log_critical(const char* fmt, ...)
 	}
 }
 
+/**
+ * \brief log message with priority alert
+ * \param fmt format string
+ */
 void log_alert(const char* fmt, ...)
 {
 	if(ALERT >= loglevel_setted) {
@@ -170,6 +199,10 @@ void log_alert(const char* fmt, ...)
 	}
 }
 
+/**
+ * \brief log message with priority emergency
+ * \param fmt format string
+ */
 void log_emergency(const char* fmt, ...)
 {
 	if(EMERGENCY >= loglevel_setted) {

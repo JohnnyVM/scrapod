@@ -6,7 +6,7 @@
 enum LOG_LEVEL {
 	EMERGENCY = 80, // system is unusable, i hope you will never need that
 	ALERT = 70, // action must be taken inmmediately
-	CRITICAL = 60, // critical conditions
+	CRITICAL = 60, // critical conditions, usually at this point the program day
 	ERROR = 50, // error conditions
 	WARNING = 40, // warning conditions
 	NOTICE = 30, // normal, but significant, condition
@@ -29,8 +29,8 @@ struct logging {
  * \brief initialice the logger
  *
  * why getLogger and not "setLogger"? becouse normal implementation have to allow multiple loggers
- * that normally its done with a "global register of logs" (see python implementation)
- * and yes its something global, becouse no one want add the log handler as parameter.
+ * that normally its done with a "global list of file descriptors" (see python implementation)
+ * becouse no one want add the log handler as parameter, or reset the log multiple times.
  * Example desired implementation:
  * \code
  * void foo() {
@@ -55,7 +55,8 @@ void get_logger(const char*);
  * \brief set log level
  *
  * the signature its int for compatibility for allow multiple implementations, a enum should be too restrictive
- * the log level its spected that work as threshold. Example its set as warning, level bigger to warning are logged
+ * the log level its spected that work as threshold. Example its set as warning,
+ * level warning and bigger are logged
  * messages the low priority (debug, notice, info) are ignored
  * \param level level to set
  */
@@ -71,12 +72,18 @@ void close_logger(const char*);
  */
 void log_record(int log_priority, const char *, ...);
 void vlog_record(int log_priority, const char *, va_list);
+
+/**
+ * \brief log the message with priority indicated
+ */
 void log_debug(const char*, ...);
 void log_notice(const char*, ...);
 void log_info(const char*, ...);
 void log_warning(const char*, ...);
 void log_error(const char*, ...);
-// biggers levels are tracked by the system
+void log_critical(const char*, ...);
+void log_alert(const char*, ...);
+void log_emergency(const char*, ...);
 
 #define INIT_LOGGING { \
 	.getLogger = &get_logger, \
@@ -86,6 +93,9 @@ void log_error(const char*, ...);
 	.notice = &log_notice, \
 	.warning = &log_warning, \
 	.error = &log_error, \
+	.critical = &log_critical, \
+	.alert = &log_alert, \
+	.emergency = &log_emergency, \
 	.closeLogger = &close_logger \
 }
 
